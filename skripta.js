@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const poljeZaPretragu = document.getElementById('poljeZaPretragu');
             poljeZaPretragu.value = searchTerm;
             poljeZaPretragu.addEventListener('keyup', (e) => {
+                // Preskačemo Enter, njega hvatamo u 'keydown' listeneru
+                if (e.key === 'Enter') return;
                 searchTerm = e.target.value;
                 pretraziPodatke(searchTerm);
             });
@@ -102,25 +104,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const trenutniSkrol = window.scrollY;
         
-        // === IZMENA POČINJE OVDE ===
-
-        // Uvek prvo obriši prethodne rezultate
         kontejnerRezultata.innerHTML = '';
+        const unetiTekst = text.trim();
+        const duzinaZaProveru = unetiTekst.replace(/\s/g, "").length;
 
-        const unetiTekst = text.trim(); // Uklanjamo samo spoljne razmake za prikaz
-        const duzinaZaProveru = unetiTekst.replace(/\s/g, "").length; // Uklanjamo SVE razmake za proveru dužine
-
-        // Ako je uneto manje od 3 karaktera (bez razmaka)
         if (duzinaZaProveru < 3) {
-            // Ako polje nije skroz prazno, prikaži poruku
             if (unetiTekst.length > 0) {
                  kontejnerRezultata.innerHTML = '<p>Unesite bar 3 karaktera za početak pretrage.</p>';
             }
-            // U svakom slučaju, prekini dalje izvršavanje funkcije
-            return; 
+            return;
         }
-
-        // === IZMENA SE ZAVRŠAVA OVDE ===
 
         const keywords = unetiTekst.toLowerCase().split(' ').filter(k => k.length > 0);
         const filtriraniPodaci = sviPodaci.filter(stavka => {
@@ -170,4 +163,25 @@ document.addEventListener('DOMContentLoaded', () => {
         navigate('home');
     });
     window.addEventListener('hashchange', route);
-});
+
+
+    // === IZMENA ZA DEDICATED BAR KOD ČITAČ (PC) ===
+    
+    let barcodeBuffer = [];
+    let lastKeyTime = Date.now();
+
+    window.addEventListener('keydown', function(e) {
+        // Proveravamo da li je fokus na polju za pretragu
+        const targetIsInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+
+        if (targetIsInput && e.key === 'Enter') {
+            // SLUČAJ 1: Skenirano je U polje za pretragu
+            e.preventDefault(); // Spreči podrazumevano ponašanje
+            const unos = e.target.value.trim();
+            if (unos.length < 3) return; // Ignoriši ako je prekratko
+
+            // Tražimo tačan bar kod
+            const foundArtikal = sviPodaci.find(item => item.bar_cod === unos);
+            if (foundArtikal) {
+                navigate('artikal', foundArtikal);
+                e.target.value = ''; //
