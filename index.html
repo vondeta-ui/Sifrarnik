@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Šifrarnik</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="stil.css">
+</head>
+<body>
+
+    <div id="app">
+        <header>
+            <h1 id="main-title">Šifrarnik</h1>
+        </header>
+
+        <main id="content"></main>
+    </div>
+
+    <template id="template-home">
+        <div class="page-home">
+            <div class="search-wrapper">
+                <input type="text" id="poljeZaPretragu" placeholder="Pretraži šifru ili naziv...">
+                <div id="barcode-icon-container">
+                    <i class="fas fa-barcode" id="barcode-scanner-btn" title="Skeniraj barkod"></i>
+                </div>
+            </div>
+            <div id="rezultatiPretrage"></div>
+        </div>
+    </template>
+
+    <template id="template-artikal">
+        <div class="page-artikal">
+            <div class="nav-links">
+                <span id="nazad-na-pretragu-btn" class="link">Nazad na pretragu</span>
+            </div>
+            <div id="detaljiArtikla"></div>
+        </div>
+    </template>
+
+    <template id="template-barcode-not-found">
+        <div class="page-barcode-not-found">
+            <h2>Bar-kod nije prepoznat</h2>
+            <p>Skenirani barkod nije pronađen u bazi podataka.</p>
+            <div class="nav-links">
+                <span id="nazad-na-pretragu-btn-notfound" class="link">Nazad na pretragu</span>
+            </div>
+        </div>
+    </template>
+
+    <div id="scanner-container" class="scanner-hidden">
+        <div id="reader"></div> 
+        <div id="scanner-controls">
+            <button id="close-scanner-btn">Zatvori skener</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="barKodSkener.js"></script>
+    <script src="skripta.js"></script>
+</body>
+</html>
