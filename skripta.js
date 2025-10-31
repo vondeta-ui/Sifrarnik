@@ -184,4 +184,48 @@ document.addEventListener('DOMContentLoaded', () => {
             const foundArtikal = sviPodaci.find(item => item.bar_cod === unos);
             if (foundArtikal) {
                 navigate('artikal', foundArtikal);
-                e.target.value = ''; //
+                e.target.value = ''; // Očisti polje
+                searchTerm = '';
+                pretraziPodatke(''); // Očisti rezultate
+            }
+            // Ako nije nađen tačan bar kod, ne radi ništa (ostavi rezultate pretrage)
+            return;
+        }
+
+        // Ako je fokus na polju, ali NIJE 'Enter', pusti korisnika da kuca
+        if (targetIsInput) {
+            return;
+        }
+
+        // SLUČAJ 2: Skenirano je "negde" (stranica je u fokusu, ali polje nije)
+        const currentTime = Date.now();
+        
+        // Ako je prošlo više od 100ms od prošlog unosa, to nije skener, resetuj buffer
+        if (currentTime - lastKeyTime > 100) {
+            barcodeBuffer = [];
+        }
+
+        if (e.key === 'Enter') {
+            if (barcodeBuffer.length > 3) { // Imamo nešto u bufferu
+                e.preventDefault();
+                const barcode = barcodeBuffer.join('');
+                
+                const foundArtikal = sviPodaci.find(item => item.bar_cod === barcode);
+                if (foundArtikal) {
+                    navigate('artikal', foundArtikal);
+                } else {
+                    navigate('barcode-not-found');
+                }
+            }
+            barcodeBuffer = []; // Uvek resetuj buffer
+        } else {
+            // Dodaj karakter u buffer (samo ako je jedan karakter)
+            if (e.key.length === 1) {
+                barcodeBuffer.push(e.key);
+            }
+        }
+        
+        lastKeyTime = currentTime; // Ažuriraj vreme poslednjeg unosa
+    });
+
+});
